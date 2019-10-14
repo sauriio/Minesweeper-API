@@ -12,5 +12,7 @@
 */
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    return 'MineSweeper Api';
 });
+
+$router->post('/game/new', ['uses' => 'GameController@newGame']);
