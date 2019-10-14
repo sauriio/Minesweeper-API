@@ -33,9 +33,7 @@ class Minesweeper
         if (!$this->_isValidValue($mines)) {
             $columns = 10;
         }
-        $newGame = new Grid($rows, $columns, $mines);
-
-        return $newGame->returnGridData();
+        $newGame = new Board($rows, $columns, $mines);
     }
 
     /**
