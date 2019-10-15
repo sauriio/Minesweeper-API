@@ -2,6 +2,7 @@
 
 namespace App\Classes\Minesweeper;
 
+use App\Classes\Exceptions\InvalidPositionException;
 use App\Classes\Minesweeper\Components\Cell;
 use App\Classes\Minesweeper\Components\MineCell;
 use App\Classes\Minesweeper\Components\SafeCell;
@@ -74,12 +75,56 @@ class Board
         }
     }
 
-    public function setMoveSet($row, $column)
+    /**
+     * set the game status, if is paused of not.
+     *
+     * @param bool $status
+     */
+    public function setPauseResumeState(bool $status)
     {
-        if (!$this->_isgameInitializated) {
-            $this->_isgameInitializated = true;
-            $this->_fillBoard($row, $column);
+        $this->_gamePaused = $status;
+    }
+
+    /**
+     * make a move on the board, return results of move.
+     *
+     * @param int $row
+     * @param int $column
+     */
+    public function setMoveSet(int $row, int $column)
+    {
+        //check if game is paused, if it is
+        if (!$this->_gamePaused) {
+            //then we check if the params are a valid position on board
+            if ($this->isValidPosition($row, $column)) {
+                //if game has not been initializated
+                if (!$this->_isgameInitializated) {
+                    //we initializated, and make the first move
+                    $this->_isgameInitializated = true;
+                    //the first move is bomb-free, so we set this
+                    //cell as a clean one
+                    $this->_fillBoard($row, $column);
+                }
+            } else {
+                //if not, we throw a new invalid position exception
+                throw new InvalidPositionException('Invalid Position.', 412);
+            }
+        } else {
+            //throw exception
+            throw new PausedGameException('Game is Paused, cannot make mouvement.', 412);
         }
+    }
+
+    /**
+     * return the result of the moveset, could be a game over if the player
+     * has won, or if he found a mine, or in case of clean cells, the results of those
+     * actions.
+     *
+     * @param int $row
+     * @param int $column
+     */
+    public function returnMoveResult(int $row, int $column)
+    {
     }
 
     /**
@@ -109,6 +154,8 @@ class Board
             for ($col = 0; $col < $this->_columns; ++$col) {
                 if ($mineCounter < $this->_mines) {
                     //we get a randomize type of cell
+                    //ToDo, make sure that we are setting the
+                    //bombs with the param number
                     $newCell = $this->randomizeCellType();
                     if ('mineCell' == $newCell->type) {
                         //if the cell type is mine, count it
@@ -137,5 +184,18 @@ class Board
     {
         //even number of 2 to randomize
         return 0 == rand(1, 10) % 2 ? new MineCell() : new SafeCell();
+    }
+
+    /**
+     * function to see if the position is valid.
+     *
+     * @param int $row
+     * @param int $column
+     *
+     * @return bool
+     */
+    private function isValidPosition(int $row, int $column)
+    {
+        return array_key_exists($column, $this->_grid) && array_key_exists($column, $this->_grid);
     }
 }

@@ -15,4 +15,10 @@ $router->get('/', function () use ($router) {
     return 'MineSweeper Api';
 });
 
-$router->post('/game/new', ['uses' => 'GameController@newGame']);
+$router->group(['prefix' => 'game'], function () use ($router) {
+    $router->get('/', ['uses' => 'GameController@getUserGames']);
+    $router->post('/new', ['uses' => 'GameController@newGame']);
+    $router->post('/{gameId:[0-9]+}/status', ['uses' => 'GameController@getGameStatus']);
+    $router->get('/{gameId:[0-9]+}/pause', ['uses' => 'GameController@pauseResumeGame']);
+    $router->post('/{gameId:[0-9]+}', ['uses' => 'GameController@makeMove']);
+});

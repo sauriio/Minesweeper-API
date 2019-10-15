@@ -14,12 +14,14 @@ class GameTableCreate extends Migration
         //create the game table
         Schema::create('game', function (Blueprint $table) {
             $table->increments('id');
-            $table->boolean('paused');
-            $table->tinyInteger('rows');
-            $table->tinyInteger('columns');
-            $table->tinyInteger('mines');
+            $table->boolean('paused')->default(false);
+            $table->tinyInteger('rows')->default(0);
+            $table->tinyInteger('columns')->default(0);
+            $table->tinyInteger('mines')->default(0);
             $table->json('payload');
-            $table->tinyInteger('seconds_played');
+            $table->boolean('initializated')->default(false);
+            $table->tinyInteger('seconds_played')->default(0);
+            $table->boolean('is_over')->default(0);
             $table->timestamps();
         });
     }

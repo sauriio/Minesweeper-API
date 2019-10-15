@@ -14,7 +14,7 @@ class GameController extends Controller
     {
     }
 
-    public function NewGame(Request $request)
+    public function newGame(Request $request)
     {
         //ruleset of validations for request params
         $validateRules = [
@@ -35,7 +35,27 @@ class GameController extends Controller
      * @param Request $request
      * @param int     $gameId
      */
-    public function PauseResumeGame(Request $request, int $gameId)
+    public function pauseResumeGame(Request $request, int $gameId)
+    {
+    }
+
+    /**
+     * get the status of this game, if is over, or paused
+     * or the number of seconds played.
+     *
+     * @param Request $request
+     * @param int     $gameId
+     */
+    public function getGameStatus(Request $request, int $gameId)
+    {
+    }
+
+    /**
+     * return list of games ids and status of the user.
+     *
+     * @param Request $request
+     */
+    public function getUserGames(Request $request)
     {
     }
 
@@ -45,7 +65,7 @@ class GameController extends Controller
      * @param Request $request
      * @param int     $gameId
      */
-    public function MakeMove(Request $request, int $gameId)
+    public function makeMove(Request $request, int $gameId)
     {
         //ruleset of params
         $validateRules = [

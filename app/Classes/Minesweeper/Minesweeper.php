@@ -60,6 +60,15 @@ class Minesweeper
     }
 
     /**
+     * set the game info.
+     *
+     * @param int $gameId
+     */
+    public function setGame(int $gameId)
+    {
+    }
+
+    /**
      * method to pause/Resume a game.
      *
      * @param int $gameId
