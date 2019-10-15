@@ -9,6 +9,7 @@ namespace App\Classes\Minesweeper\Components;
 class SafeCell extends Cell
 {
     public $type = 'safeCell';
+    public $minesAround = 0;
 
     public function __construct()
     {
