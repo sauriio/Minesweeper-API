@@ -28,4 +28,31 @@ class GameController extends Controller
 
         return $newGame->newGame($request->rows, $request->columns, $request->mines, null);
     }
+
+    /**
+     * Method to pause/Resume Game.
+     *
+     * @param Request $request
+     * @param int     $gameId
+     */
+    public function PauseResumeGame(Request $request, int $gameId)
+    {
+    }
+
+    /**
+     * Method to make a move on a game.
+     *
+     * @param Request $request
+     * @param int     $gameId
+     */
+    public function MakeMove(Request $request, int $gameId)
+    {
+        //ruleset of params
+        $validateRules = [
+            'row' => 'required|integer|min:0',
+            'column' => 'required|integer|min:0',
+        ];
+        //lets validate the params
+        $this->validate($request, $validateRules);
+    }
 }
