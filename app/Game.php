@@ -40,6 +40,14 @@ class Game extends Model
         'is_over',
     ];
     /**
+     * The attributes excluded from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'payload',
+    ];
+    /**
      * cast table rows.
      *
      * @var array

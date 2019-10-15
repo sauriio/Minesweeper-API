@@ -10,8 +10,11 @@ class GameController extends Controller
     /**
      * Create a new controller instance.
      */
-    public function __construct()
+    private $game;
+
+    public function __construct(Minesweeper $mineGame)
     {
+        $this->game = $mineGame;
     }
 
     public function newGame(Request $request)
@@ -24,9 +27,8 @@ class GameController extends Controller
         ];
         //lets validate the params
         $this->validate($request, $validateRules);
-        $newGame = new Minesweeper();
 
-        return $newGame->newGame($request->rows, $request->columns, $request->mines, null);
+        return $this->game->newGame($request->rows, $request->columns, $request->mines, null);
     }
 
     /**
@@ -37,6 +39,7 @@ class GameController extends Controller
      */
     public function pauseResumeGame(Request $request, int $gameId)
     {
+        return $this->game->pauseResumeGame($gameId);
     }
 
     /**
@@ -48,6 +51,7 @@ class GameController extends Controller
      */
     public function getGameStatus(Request $request, int $gameId)
     {
+        return $this->game->getGame($gameId);
     }
 
     /**
@@ -71,8 +75,11 @@ class GameController extends Controller
         $validateRules = [
             'row' => 'required|integer|min:0',
             'column' => 'required|integer|min:0',
+            'flagged' => 'required|boolean',
         ];
         //lets validate the params
         $this->validate($request, $validateRules);
+
+        return $this->game->setMoveSet($request->row, $request->column, $gameId, $request->flagged);
     }
 }

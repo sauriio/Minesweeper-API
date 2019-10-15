@@ -22,12 +22,6 @@ class Board
      */
     private $_gamePaused = false;
     /**
-     * is the game over, cannot continue.
-     *
-     * @var bool
-     */
-    private $_gameIsOver = false;
-    /**
      * Number of mines on grid.
      *
      * @var int
@@ -55,22 +49,26 @@ class Board
     /**
      * Constructor of class.
      *
-     * @param int $rows
-     * @param int $columns
-     * @param int $mines
+     * @param int        $rows
+     * @param int        $columns
+     * @param int        $mines
+     * @param null|mixed $savedGrid
      */
-    public function __construct(int $rows, int $columns, int $mines)
+    public function __construct(int $rows = 0, int $columns = 0, int $mines = 0)
     {
-        //set the number of mines of this board.
-        $this->_mines = $mines;
-        //set the number of rows of this board.
-        $this->_rows = $rows;
-        //set the number of columns of this board.
-        $this->_columns = $columns;
-        //let's initializate the game array.
-        for ($r = 0; $r < $rows; ++$r) {
-            for ($col = 0; $col < $columns; ++$col) {
-                $this->_grid[$r][$col] = null;
+        //new game
+        if (!empty($rows) && !empty($columns) && !empty($mines)) {
+            //set the number of mines of this board.
+            $this->_mines = $mines;
+            //set the number of rows of this board.
+            $this->_rows = $rows;
+            //set the number of columns of this board.
+            $this->_columns = $columns;
+            //let's initializate the game array.
+            for ($r = 0; $r < $rows; ++$r) {
+                for ($col = 0; $col < $columns; ++$col) {
+                    $this->_grid[$r][$col] = null;
+                }
             }
         }
     }
@@ -86,12 +84,33 @@ class Board
     }
 
     /**
+     * set grid saved on game payload.
+     *
+     * @param array $savedGrid
+     */
+    public function setSavedGrid(array $savedGrid)
+    {
+        $this->_grid = $savedGrid;
+    }
+
+    /**
+     * set Game Initializated status.
+     *
+     * @param bool $gameInit
+     */
+    public function setGameInitStatus(bool $gameInit)
+    {
+        $this->_isgameInitializated = $gameInit;
+    }
+
+    /**
      * make a move on the board, return results of move.
      *
-     * @param int $row
-     * @param int $column
+     * @param int   $row
+     * @param int   $column
+     * @param mixed $flagged
      */
-    public function setMoveSet(int $row, int $column)
+    public function setMoveSet(int $row, int $column, $flagged = false)
     {
         //check if game is paused, if it is
         if (!$this->_gamePaused) {
@@ -99,32 +118,19 @@ class Board
             if ($this->isValidPosition($row, $column)) {
                 //if game has not been initializated
                 if (!$this->_isgameInitializated) {
-                    //we initializated, and make the first move
-                    $this->_isgameInitializated = true;
                     //the first move is bomb-free, so we set this
                     //cell as a clean one
                     $this->_fillBoard($row, $column);
                 }
-            } else {
-                //if not, we throw a new invalid position exception
-                throw new InvalidPositionException('Invalid Position.', 412);
+                //and return result of mouvement, all the
+                //cell that are clean
+                return $this->returnMoveResult($row, $column, $flagged);
             }
-        } else {
-            //throw exception
-            throw new PausedGameException('Game is Paused, cannot make mouvement.', 412);
+            //if not, we throw a new invalid position exception
+            throw new InvalidPositionException('Invalid Position.', 412);
         }
-    }
-
-    /**
-     * return the result of the moveset, could be a game over if the player
-     * has won, or if he found a mine, or in case of clean cells, the results of those
-     * actions.
-     *
-     * @param int $row
-     * @param int $column
-     */
-    public function returnMoveResult(int $row, int $column)
-    {
+        //throw exception
+        throw new PausedGameException('Game is Paused, cannot make mouvement.', 412);
     }
 
     /**
@@ -135,6 +141,18 @@ class Board
     public function returnBoardData(): array
     {
         return $this->_grid;
+    }
+
+    /**
+     * return the result of the moveset, could be a game over if the player
+     * has won, or if he found a mine, or in case of clean cells, the results of those
+     * actions.
+     *
+     * @param int $row
+     * @param int $column
+     */
+    private function returnMoveResult(int $row, int $column)
+    {
     }
 
     /**
@@ -150,6 +168,8 @@ class Board
         $mineCounter = 0;
         //we walk trought the array, and start setting the
         //values for every cell
+        $this->_rows = count($this->_grid);
+        $this->_columns = count($this->_grid[0]);
         for ($r = 0; $r < $this->_rows; ++$r) {
             for ($col = 0; $col < $this->_columns; ++$col) {
                 if ($mineCounter < $this->_mines) {
